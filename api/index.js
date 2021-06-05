@@ -6,7 +6,7 @@ const model = require('./sdk/model.js');
 
 // Bot Setting
 const TelegramBot = require('node-telegram-bot-api');
-const token = '1816618473:AAG9ZjC0nm4C6qlrXkVbIq-IPEukf5_ruhA'
+const token = '1758185565:AAEtw3eB1oTJ4-zuv0WKXqRevfFAUVzHGfw'
 const bot = new TelegramBot(token, {polling: true});
 
 
@@ -16,16 +16,45 @@ bot.onText(/\/start/, (msg) => {
     bot.sendMessage(
         msg.chat.id,
         `hello ${msg.chat.first_name}, welcome...\n
-        click /menu to main menu`
+        click /predict `
     );   
 });
 
-bot.onText(/\/menu/, (msg) => { 
-    console.log(msg)
+
+state = 0;
+bot.onText(/\/predict/, (msg) => { 
     bot.sendMessage(
         msg.chat.id,
-        `this is your main menu`
+        `masukan nilai i|v contohnya 9|9`
     );   
+    state=1;
+});
+
+
+bot.on('message',(msg) => {
+    if(state == 1){
+        s =msg.text.split("|");
+        i = s[0]
+        v = s[1]
+	model.predict(
+	   [
+             parseFloat(s[0]), // string to float
+             parseFloat(s[1])
+	   ]
+	).then((jres)=>{
+	    bot.sendMessage(
+	       msg.chat.id,
+		`nilai v yang diprediksi adalah ${jres[0]} volt`
+	        
+	    );  
+            bot.sendMessage(
+		msg.chat.id,
+		`nilai P yang diprediksi adalah ${jres[1]} watt`
+	    );
+      })               
+    }else{
+        state = 0
+    }
 });
 
 // routers
