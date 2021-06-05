@@ -70,3 +70,4 @@ r.get('/prediction/:i/:r', function(req, res, next) {
 });
 
 module.exports = r;
+
